@@ -1,0 +1,13 @@
+{
+  "type": "array",
+  "items": {
+    "type": "string",
+    "enum": [
+      "ninja",
+      "pirate",
+      "zombie",
+      "robot"
+    ]
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

@@ -1,0 +1,22 @@
+{
+  "oneOf": [
+    {
+      "$ref": "Game.json"
+    },
+    {
+      "$ref": "Board.json"
+    },
+    {
+      "$ref": "Complete.json"
+    },
+    {
+      "$ref": "Card.json"
+    },
+    {
+      "$ref": "Move.json"
+    },
+    {
+      "$ref": "Place.json"
+    }
+  ]
+}

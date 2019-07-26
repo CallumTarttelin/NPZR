@@ -1,0 +1,207 @@
+openapi: 3.0.1
+info:
+  title: NPZR Server API
+  description: The Server API for Ninja Pirate Zombie Robot. In v0 breaking changes can be expected until v1 is released.
+  contact:
+    email: npzr@callumtarttelin.com
+  license:
+    name: MIT License
+    url: https://mit-license.org/
+  version: 0.0.1
+servers:
+- url: https://npzr.callumtarttelin.com/v0/game
+tags:
+- name: In Game
+  description: Operations for use whilst in a game
+- name: Out of Game
+  description: Operations to get into a game
+
+paths:
+  /:
+    post:
+      tags:
+      - Out of Game
+      summary: Create a new game
+      operationId: addGame
+      responses:
+        201:
+          description: Created a game with returned ID
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+      security:
+        - BearerAuth: []
+
+  
+  /{gameId}:
+    get:
+      tags:
+      - In Game
+      summary: Get the state of the game
+      description: Get the game state for the board and complete cards
+      operationId: getGame
+      parameters:
+      - name: gameId
+        in: path
+        description: ID of Game to get state of
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Retrieved the game content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        404:
+          description: Could not find the game
+    
+    put:
+      tags:
+      - In Game
+      summary: Take an action in the game
+      description: Submit an action place or move a card
+      operationId: takeAction
+      parameters:
+      - name: gameId
+        in: path
+        description: ID of Game to get state of
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The action being taken
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/Place'
+              - $ref: '#/components/schemas/Move'
+      responses:
+        200:
+          description: Successfuly took action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        400:
+          description: Failed to take action
+          content:
+            application/json:
+              schema:
+                description: what went wrong
+                type: string
+
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        yourBoard:
+          $ref: '#/components/schemas/Board'
+        otherBoard:
+          $ref: '#/components/schemas/Board'
+        yourComplete:
+          $ref: '#/components/schemas/Complete'
+        otherComplete:
+          $ref: '#/components/schemas/Complete'
+        hand:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+        deckCount:
+          type: integer
+          format: int32
+        complete:
+          type: boolean
+          default: false
+    Board:
+      type: array
+      items:
+        type: array
+        items: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+    Complete:
+      type: array
+      items:
+        type: string
+        enum: [ninja, pirate, zombie, robot]
+    Card:
+      type: object
+      properties:
+        character:
+          type: string
+          enum: [ninja, pirate, zombie, robot, any]
+        part:
+          type: string
+          enum: [legs, chest, head, any]
+    Move:
+      type: object
+      properties:
+        action:
+          type: string
+          default: "move"
+        startBoard:
+          description: 'Which board the start card is on, 0 for self, 1 for other'
+          type: integer
+          format: int32
+        startRow:
+          description: 'Which row is the card on'
+          type: integer
+          format: int32
+        startColumn:
+          description: 'Which column is the card on'
+          type: integer
+          format: int32
+        endBoard:
+          description: 'Which board the destination is on, 0 for self, 1 for other'
+          type: integer
+          format: int32
+        endRow:
+          description: 'Which row is the target on'
+          type: integer
+          format: int32
+        endColumn:
+          description: 'Which column is the target on'
+          type: integer
+          format: int32
+    Place:
+      type: object
+      properties:
+        action:
+          type: string
+          default: "move"
+        handIndex:
+          description: 'Which card in hand to move'
+          type: integer
+          format: int32
+        endBoard:
+          description: 'Which board the destination is on, 0 for self, 1 for other'
+          type: integer
+          format: int32
+        endRow:
+          description: 'Which row is the target on'
+          type: integer
+          format: int32
+        endColumn:
+          description: 'Which column is the target on'
+          type: integer
+          format: int32
+  
+  securitySchemes:
+    BearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+      x-bearerInfoFunc: app.bearer_info

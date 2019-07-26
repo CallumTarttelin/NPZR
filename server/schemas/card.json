@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "character": {
+      "type": "string",
+      "enum": [
+        "ninja",
+        "pirate",
+        "zombie",
+        "robot",
+        "any"
+      ]
+    },
+    "part": {
+      "type": "string",
+      "enum": [
+        "legs",
+        "chest",
+        "head",
+        "any"
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

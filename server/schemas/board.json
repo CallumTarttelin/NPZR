@@ -1,0 +1,13 @@
+{
+  "type": "array",
+  "items": {
+    "type": "array",
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "Card.json"
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

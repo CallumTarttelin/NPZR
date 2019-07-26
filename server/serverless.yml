@@ -1,0 +1,151 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: npzr-server # NOTE: update this with your service name
+#app: your-app-name
+#tenant: your-tenant-name
+
+# plugins:
+#   - serverless-domain-manager
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: python3.7
+
+# you can overwrite defaults here
+  stage: dev
+  region: eu-west-1
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.py
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.py
+#    - exclude-me-dir/**
+
+functions:
+  hello:
+    handler: handler.hello
+    description: Hello World
+    events:
+      - http:
+          path: /helloworld
+          method: get
+  
+  addGame:
+    handler: handler.addGame
+    events:
+      - http:
+          path: /
+          method: post
+          # authorizer:
+          #   name: npzr-cognito-auth
+  
+  getGame:
+    handler: handler.getGame
+    events:
+      - http:
+          path: /{gameId}
+          method: get
+          # authorizer:
+          #   name: npzr-cognito-auth
+          request:
+            parameters:
+              paths:
+                gameId: true
+  
+  takeAction:
+    handler: handler.takeAction
+    events:
+      - http:
+          path: /{gameId}
+          method: put
+          # authorizer:
+          #   name: npzr-cognito-auth
+          request:
+            parameters:
+              paths:
+                gameId: true
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    npzrTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: type
+            AttributeType: S
+        BillingMode: PROVISIONED
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: type
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: npzrTable
+        Tags:
+          - Key: project
+            Value: NPZR
+    npzrPoolClient:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        AliasAttributes:
+          - preferred_username
+        EmailConfiguration:
+          EmailSendingAccount: DEVELOPER
+          ReplyToEmailAddress: npzr@callumtarttelin.com
+          SourceArn: arn:aws:ses:eu-west-1:605006910453:identity/npzr@callumtarttelin.com
+        # MfaConfiguration: OPTIONAL
+        # Policies:
+        #   PasswordPolicy:
+        #     MinimumLength: 8
+        #     RequireLowercase: false
+        #     RequireNumbers: false
+        #     RequireSymbols: false
+        #     RequireUppercase: false
+        Schema:
+          - AttributeDataType: String
+            Name: email
+            Required: true
+      

@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "default": "move"
+    },
+    "handIndex": {
+      "description": "Which card in hand to move",
+      "type": "integer",
+      "format": "int32"
+    },
+    "endBoard": {
+      "description": "Which board the destination is on, 0 for self, 1 for other",
+      "type": "integer",
+      "format": "int32"
+    },
+    "endRow": {
+      "description": "Which row is the target on",
+      "type": "integer",
+      "format": "int32"
+    },
+    "endColumn": {
+      "description": "Which column is the target on",
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
