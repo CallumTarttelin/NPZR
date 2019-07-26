@@ -69,7 +69,7 @@ functions:
           method: get
   
   addGame:
-    handler: handler.addGame
+    handler: handler.add_game
     events:
       - http:
           path: /
@@ -78,7 +78,7 @@ functions:
           #   name: npzr-cognito-auth
   
   getGame:
-    handler: handler.getGame
+    handler: handler.get_game
     events:
       - http:
           path: /{gameId}
@@ -91,13 +91,24 @@ functions:
                 gameId: true
   
   takeAction:
-    handler: handler.takeAction
+    handler: handler.take_action
     events:
       - http:
           path: /{gameId}
           method: put
           # authorizer:
           #   name: npzr-cognito-auth
+          request:
+            parameters:
+              paths:
+                gameId: true
+
+  joinGame:
+    handler: handler.join_game
+    events:
+      - http:
+          path: /{gameId}
+          method: post
           request:
             parameters:
               paths:
@@ -148,4 +159,35 @@ resources:
           - AttributeDataType: String
             Name: email
             Required: true
-      
+    budget:
+      Type: "AWS::Budgets::Budget"
+      Properties:
+        Budget:
+          BudgetLimit:
+            Amount: 10
+            Unit: USD
+          TimeUnit: MONTHLY
+          TimePeriod:
+            Start: 1225864800
+            End: 1926864800
+          BudgetType: COST
+          CostFilters:
+            AZ:
+              - us-east-1
+              - us-west-1
+              - us-east-2
+        NotificationsWithSubscribers:
+          - Notification:
+              NotificationType: ACTUAL
+              ComparisonOperator: GREATER_THAN
+              Threshold: 5
+            Subscribers:
+              - SubscriptionType: EMAIL
+                Address: callum@tarttelin.co.uk
+          - Notification:
+              NotificationType: ACTUAL
+              ComparisonOperator: GREATER_THAN
+              Threshold: 8
+            Subscribers:
+              - SubscriptionType: EMAIL
+                Address: callum@tarttelin.co.uk
