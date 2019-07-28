@@ -8,7 +8,7 @@ import uuid
 import boto3
 
 
-NPZR_TABLE = boto3.resource('dynamodb').Table('npzrTable')
+NPZR_TABLE = boto3.resource('dynamodb', region_name='eu-west-1').Table('npzrTable')
 
 
 def hello(event, _):
@@ -35,7 +35,7 @@ def add_game(event, _):
         Item={
             "id": item_id,
             "type": "game",
-            "deckSeed": uuid.uuid4().int,
+            "deckSeed": uuid.uuid4().hex,
             "player1": event["requestContext"]["authorizer"]["claims"]["cognito:username"],
             "player2": None,
             "Actions": [],
@@ -88,10 +88,7 @@ def join_game(event, _):
     )
     return {
         "statusCode": 200,
-        "body": {
-            "message": "Added user to game",
-            "input": event
-        }
+        "body": "Added user to the game"
     }
 
 

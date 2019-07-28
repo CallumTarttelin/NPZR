@@ -51,17 +51,15 @@ provider:
 #    variable1: value1
 
 # you can add packaging information here
-#package:
-#  include:
-#    - include-me.py
-#    - include-me-dir/**
-#  exclude:
-#    - exclude-me.py
-#    - exclude-me-dir/**
+package:
+  include:
+    - src/**
+  exclude:
+    - test/**
 
 functions:
   hello:
-    handler: handler.hello
+    handler: src/handler.hello
     description: Hello World
     events:
       - http:
@@ -69,7 +67,7 @@ functions:
           method: get
   
   addGame:
-    handler: handler.add_game
+    handler: src/handler.add_game
     events:
       - http:
           path: /
@@ -78,7 +76,7 @@ functions:
           #   name: npzr-cognito-auth
   
   getGame:
-    handler: handler.get_game
+    handler: src/handler.get_game
     events:
       - http:
           path: /{gameId}
@@ -91,7 +89,7 @@ functions:
                 gameId: true
   
   takeAction:
-    handler: handler.take_action
+    handler: src/handler.take_action
     events:
       - http:
           path: /{gameId}
@@ -104,7 +102,7 @@ functions:
                 gameId: true
 
   joinGame:
-    handler: handler.join_game
+    handler: src/handler.join_game
     events:
       - http:
           path: /{gameId}
